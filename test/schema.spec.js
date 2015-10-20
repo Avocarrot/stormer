@@ -263,13 +263,14 @@ describe('Schema Tests', function() {
 		});
 
 		it.skip('return an error if an array field has items with the wrong type', function(done) {
+			console.log(this.schema.properties);
 			this.schema.create({
 				pk: '1234',
-				arrayOfStringsField: [1, 2, 3] // The array should have items of type String
+				arrayOfStringsField: [1, '2', '3'] // The array should have items of type String
 			}).then(function() {
 				done(new Error('Test failed'));
 			}).catch(function(err) {
-				err.message.should.equal('Property complexField should be of type Number');
+				err.message.should.equal('Property arrayOfStringsField[0] should be of type String');
 				done();
 			});
 		});
