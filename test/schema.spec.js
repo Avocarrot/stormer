@@ -293,6 +293,17 @@ describe('Schema Tests', function() {
 			});
 		});
 
+		it('create objects with properties of type array', function(done) {
+			this.schema.create({
+				pk: '1234',
+				arrayOfObjectsField: [{fieldA: '1234'}, {fieldA: '1234'}] 
+			}).then(function(instance) {
+				instance.should.have.deep.property('arrayOfObjectsField[0].fieldA', '1234');
+				instance.should.have.deep.property('arrayOfObjectsField[1].fieldA', '1234');
+				done();
+			});
+		});
+
 		it('set the default values', function(done) {
 			this.schema.create({
 				pk: '1234'
