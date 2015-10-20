@@ -175,5 +175,50 @@ describe('Schema Tests', function() {
 		});
 
 	});
+
+	describe('Schema.prototype.setDefaults() should', function() {
+
+		before(function() {
+			var schemaDef = {
+				fieldWithoutDefault: 'String',
+				fieldWithDefault: {
+					type: 'Number',
+					default: 1234
+				},
+				nestedObject: {
+					type: 'Object',
+					nestedFieldWithDefault: {
+						type: 'String',
+						default: 'this is the default value'
+					}
+				}
+			};
+
+			this.schema = new Schema(schemaDef);
+		});
+
+		it('set the default values', function(done) {
+			this.schema.setDefaults({
+				pk: '1234'
+			}).then(function(objWithDefaults) {
+				objWithDefaults.should.not.have.property('fieldWithoutDefault');
+				objWithDefaults.should.have.property('fieldWithDefault', 1234);
+				objWithDefaults.should.have.deep.property('nestedObject.nestedFieldWithDefault', 'this is the default value');
+				done();
+			});
+		});
+
+		it('not set a default value if one is already set by the user', function(done) {
+			this.schema.setDefaults({
+				pk: '1234',
+				fieldWithDefault: 5678
+			}).then(function(objWithDefaults) {
+				objWithDefaults.should.have.property('fieldWithDefault', 5678);
+				done();
+			});
+		});
+
+	});
+
 	
 });
