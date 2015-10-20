@@ -8,6 +8,7 @@ Simplifies tasks such as creating and validating schemas for models as well as s
 ## Contents
 - [Installation](#installation)
 - [Examples](#contributing)
+- [Contributing](#contributing)
 
 
 ## Installation
@@ -86,3 +87,12 @@ var schema = {
 
 store.define('myModel', schema);
 ```
+
+## Contributing
+
+This project is work in progress and we'd love more people contributing to it. 
+
+1. Fork the repo
+2. Apply your changes
+3. Write tests
+4. Submit your pull request
