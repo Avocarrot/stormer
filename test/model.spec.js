@@ -1,12 +1,13 @@
 var Promise = require('bluebird');
+var sinon = require('sinon');
 var chai = require('chai');
-var util = require('util');
 var Model = require('../lib/model');
-var mockStore = require('./mocks/store');
+var Store = require('../lib/store');
 var NotFoundError = require('../lib/errors/NotFoundError');
-var ValidationError = require('../lib/errors/ValidationError');
 
 chai.should();
+
+var sandbox = sinon.sandbox.create();
 
 describe('Model Tests', function() {
 
@@ -25,10 +26,14 @@ describe('Model Tests', function() {
 		};
 
 		this.model = new Model(schema);
+		this.mockStore = new Store();
+		this.instance = {
+			pk: '1234'
+		};
 	});
 
 	beforeEach(function() {
-		mockStore.restore();	
+		sandbox.restore();
 	});
 
 	it('Model.prototype.constructor() should throw an error if no schema is passed', function() {
@@ -40,72 +45,63 @@ describe('Model Tests', function() {
 	describe('Model.prototype.get() should', function() {
 
 		it('return the instance if it is found', function(done) {
-			var model = this.model;
-			
-			mockStore.createEntry({
-				pk: '1',
-				complexNumericField: 1234
-			}).then(function() {
-				model.get('1', mockStore).then(function(instance){
-					instance.should.have.property('pk', '1');
-					done();
-				});
+			var that = this;
+			sandbox.stub(this.mockStore, 'getEntry').returns(Promise.resolve(this.instance));
+
+			this.model.get('1234', this.mockStore).then(function(instance){
+				that.mockStore.getEntry.calledOnce.should.be.true;
+				that.mockStore.getEntry.calledWith(that.instance.pk).should.be.true;
+				instance.should.equal(that.instance);
+				done();
 			});
 
 		});
 
 		it('return an error if the instance is not found', function(done) {
-			this.model.get('2', mockStore).catch(function(err){
-				err.message.should.equal('Instance with pk 2 is not found');
+			var that = this;
+
+			sandbox.stub(this.mockStore, 'getEntry').returns(Promise.reject(new NotFoundError('Instance with pk 1234 is not found')));
+
+			this.model.get('1234', this.mockStore).catch(function(err){
+				that.mockStore.getEntry.calledOnce.should.be.true;
+				that.mockStore.getEntry.calledWith(that.instance.pk).should.be.true;
+				err.message.should.equal('Instance with pk 1234 is not found');
 				done();
 			});
+
 		});
 	
 	});
 
 	describe('Model.prototype.create() should', function() {
-	
-		it('not create instance with wrong field types', function(done) {
-			this.model.create({
-				pk: 1234,
-				numericField: 'this should be a number',
-				stringField: 1,
-				complexNumericField: 'this should be a number too'
-			}, mockStore).catch(function(err) {
-				err.should.be.an.instanceOf(ValidationError);
-				err.message.should.equal('Property pk should be of type String');
-				done();
-			});
-		});
 
-		it('not create instance without all the required fields', function(done) {
-			this.model.create({}, mockStore).catch(function(err) {
-				err.should.be.an.instanceOf(ValidationError);
-				err.message.should.equal('Properties [complexNumericField, pk] are required');
-				done();
-			});
-		});
+		it('return an error if schema has failed to create new instance', function(done) {
+			var that = this;
+			var schema = this.model.schema;
 
-		it('create an instance with the default values', function(done) {
-			this.model.create({
-				pk: '1234',
-				numericField: 1,
-				stringField: 'This is a test',
-				complexNumericField: 1234
-			}, mockStore).then(function(instance) {
-				instance.should.have.property('complexStringField', 'This is my default value');
+			sandbox.stub(schema, 'create').returns(Promise.reject(new Error('Schema.prototype.create() failed')));
+
+			this.model.create(this.instance, this.mockStore).catch(function(err) {
+				schema.create.calledOnce.should.be.true;
+				schema.create.calledWith(that.instance).should.be.true;
+				err.message.should.equal('Schema.prototype.create() failed');
 				done();
 			}).catch(done);
 		});
 
 		it('create and save a valid instance', function(done) {
-			this.model.create({
-				pk: '1234',
-				numericField: 1,
-				stringField: 'This is a test',
-				complexNumericField: 1234
-			}, mockStore).then(function(instance) {
-				mockStore.items.length.should.equal(1);
+			var that = this;
+			var schema = this.model.schema;
+
+			sandbox.stub(this.mockStore, 'createEntry').returns(Promise.resolve(this.instance));
+			sandbox.stub(schema, 'create').returns(Promise.resolve(this.instance));
+
+			this.model.create(this.instance, this.mockStore).then(function(createdInstance) {
+				that.mockStore.createEntry.calledOnce.should.be.true;	
+				that.mockStore.createEntry.calledWith(that.instance).should.be.true;
+				schema.create.calledOnce.should.be.true;
+				schema.create.calledWith(that.instance).should.be.true;
+				createdInstance.should.equal(that.instance);
 				done();
 			}).catch(done);
 		});
@@ -113,53 +109,23 @@ describe('Model Tests', function() {
 	});
 
 	describe('Model.prototype.update() should', function() {
-	
-		it('not update an instance with wrong field types', function(done) {
-			this.model.update({
-				pk: 1234,
-				numericField: 'this should be a number',
-				stringField: 1,
-				complexNumericField: 'this should be a number too'
-			}, mockStore).catch(function(err) {
-				err.should.be.an.instanceOf(ValidationError);
-				err.message.should.equal('Property pk should be of type String');
-				done();
-			});
-		});
 
-		it('not update an instance without all the required fields', function(done) {
-			this.model.update({}, mockStore).catch(function(err) {
-				err.should.be.an.instanceOf(ValidationError);
-				err.message.should.equal('Properties [complexNumericField, pk] are required');
-				done();
-			});
-		});
+		it.skip('update and save a valid instance', function(done) {
 
-		it('return an error if instance does not exist', function(done) {
-			this.model.update({
-				pk: '1234',
-				complexNumericField: 1234
-			}, mockStore).catch(function(err) {
-				err.should.be.an.instanceOf(NotFoundError);
-				done();
-			});
-		});
+			/** Note: Fix this test. It calles the schema.create which creates a new instance **/
 
-		it('update and save a valid instance', function(done) {
 			var that = this;
-			mockStore.createEntry({
-				pk: '1234',
-				complexNumericField: 1234
-			}).then(function() {
-				return that.model.update({
-					pk: '1234',
-					numericField: 1,
-					stringField: 'This is a test',
-					complexNumericField: 1234
-				}, mockStore).then(function(instance) {
-					mockStore.items.length.should.equal(1);
-					done();
-				});
+
+			sandbox.stub(this.model.schema, 'create').returns(Promise.resolve(this.instance));
+			sandbox.stub(this.mockStore, 'updateEntry').returns(Promise.resolve(this.instance));
+
+			this.model.update(this.instance, this.mockStore).then(function(instance) {
+				that.model.schema.create.calledOnce.should.be.true;
+				that.model.schema.create.calledWith(that.instance).should.be.true;
+				that.mockStore.updateEntry.calledOnce.should.be.true;
+				that.mockStore.updateEntry.calledWith(that.instance.pk, that.instance).should.be.true;
+				instance.should.equal(that.instance);
+				done();
 			}).catch(done);
 
 		});

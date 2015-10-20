@@ -81,10 +81,27 @@ var store = new Store();
 var schema = {
     name: 'String',
     address: {
-        type: 'object',
+        type: 'Object',
         streetName: 'String',
         streetNumber: 'Number',
         poBox: 'Number'
+    }
+};
+
+store.define('myModel', schema);
+```
+
+**Example 7: Define schemas with Array types**
+
+```javascript
+var store = new Store();
+
+// Defines a 'friends' property with Array type
+var schema = {
+    firstName: 'String',
+    friends: {
+        type: 'Array',
+        of: 'String'
     }
 };
 
