@@ -317,44 +317,5 @@ describe('Schema Tests', function() {
 		});
 
 	});
-
-	// describe.skip('Schema.prototype.create() should', function() {
-
-	// 	it('create object with array field', function(done) {
-
-	// 		var schemaDef = {
-	// 			arrayOfStrings: {
-	// 				type: 'Array',
-	// 				of: 'String'
-	// 			},
-	// 			arrayOfObjects: {
-	// 				type: 'Array',
-	// 				of: {
-	// 					type: 'Object',
-	// 					fieldA: 'Number',
-	// 					fieldB: 'String'
-	// 				}
-	// 			} 
-	// 		};
-
-	// 		var schema = new Schema(schemaDef);
-
-	// 		schema.create({
-	// 			pk: '1234',
-	// 			arrayOfStrings: ['str1', 'str2'],
-	// 			arrayOfObjects: [{fieldA: 1, fieldB: 'str1'}, {fieldA: 2, fieldB: 'str2'}]
-	// 		}).then(function(obj) {
-	// 			obj.should.have.property('pk', '1234');
-	// 			obj.should.have.deep.property('arrayOfStrings[0]', 'str1');
-	// 			obj.should.have.deep.property('arrayOfStrings[1]', 'str2');
-	// 			obj.should.have.deep.property('arrayOfObjects[0].fieldA', 1);
-	// 			obj.should.have.deep.property('arrayOfObjects[0].fieldB', 'str1');
-	// 			obj.should.have.deep.property('arrayOfObjects[1].fieldA', 2);
-	// 			obj.should.have.deep.property('arrayOfObjects[1].fieldB', 'str2');
-	// 			done();
-	// 		});
-	// 	});
-
-	// });
 	
 });
