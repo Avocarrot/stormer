@@ -276,9 +276,9 @@ describe('Schema Tests', function() {
 		it('return an error if an array field has items with the wrong type', function(done) {
 			this.schema.create({
 				pk: '1234',
-				arrayOfStringsField: [1, '2', '3'] // The array should have items of type String
+				arrayOfStringsField: ['1', 2, '3'] // The array should have items of type String
 			}).catch(function(err) {
-				err.message.should.equal('Property arrayOfStringsField.of[0] should be of type String');
+				err.message.should.equal('Element at index 1 of property arrayOfStringsField.of should be of type String');
 				done();
 			});
 		});
@@ -288,7 +288,7 @@ describe('Schema Tests', function() {
 				pk: '1234',
 				arrayOfObjectsField: [{fieldA: 1234}, {fieldA: '1234'}] // The array should have items of type Object
 			}).catch(function(err) {
-				err.message.should.equal('Property arrayOfObjectsField.of.fieldA[0] should be of type String');
+				err.message.should.equal('Element at index 0 of property arrayOfObjectsField.of.fieldA should be of type String');
 				done();
 			});
 		});
