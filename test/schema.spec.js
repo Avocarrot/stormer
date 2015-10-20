@@ -128,21 +128,23 @@ describe('Schema Tests', function() {
 			};
 
 			var schema = new Schema(schemaDef);
-			schema.properties.length.should.equal(5);
+			schema.properties.length.should.equal(8);
 			schema.properties.should.include.something.that.deep.equals({
 				key: 'arrayOfStrings',
-				type: 'Array',
-				of: {
-					type: 'String'
-				}
+				type: 'Array'
+			});
+			schema.properties.should.include.something.that.deep.equals({
+				key: 'arrayOfStrings.of',
+				type: 'String'
 			});
 			schema.properties.should.include.something.that.deep.equals({
 				key: 'arrayOfComplexStrings',
-				type: 'Array',
-				of: {
-					type: 'String',
-					default: 'this is the default value'
-				}
+				type: 'Array'
+			});
+			schema.properties.should.include.something.that.deep.equals({
+				key: 'arrayOfComplexStrings.of',
+				type: 'String',
+				default: 'this is the default value'
 			});
 			schema.properties.should.include.something.that.deep.equals({
 				key: 'nestedObject',
@@ -150,10 +152,11 @@ describe('Schema Tests', function() {
 			});
 			schema.properties.should.include.something.that.deep.equals({
 				key: 'nestedObject.nestedArrayOfNumbers',
-				type: 'Array',
-				of: {
-					type: 'Number'
-				}
+				type: 'Array'
+			});
+			schema.properties.should.include.something.that.deep.equals({
+				key: 'nestedObject.nestedArrayOfNumbers.of',
+				type: 'Number'
 			});
 			schema.properties.should.include.something.that.deep.equals({
 				key: 'pk',
@@ -179,6 +182,14 @@ describe('Schema Tests', function() {
 				arrayOfStringsField: {
 					type: 'Array',
 					of: 'String'
+				},
+				arrayOfObjectsField: {
+					type: 'Array',
+					of: {
+						type: 'Object',
+						fieldA: 'String',
+						fieldB: 'Number'
+					}
 				},
 				nestedObject: {
 					type: 'Object',
@@ -262,15 +273,22 @@ describe('Schema Tests', function() {
 			});
 		});
 
-		it.skip('return an error if an array field has items with the wrong type', function(done) {
-			console.log(this.schema.properties);
+		it('return an error if an array field has items with the wrong type', function(done) {
 			this.schema.create({
 				pk: '1234',
 				arrayOfStringsField: [1, '2', '3'] // The array should have items of type String
-			}).then(function() {
-				done(new Error('Test failed'));
 			}).catch(function(err) {
-				err.message.should.equal('Property arrayOfStringsField[0] should be of type String');
+				err.message.should.equal('Property arrayOfStringsField.of[0] should be of type String');
+				done();
+			});
+		});
+
+		it('return an error if an array of objects has items with the wrong type', function(done) {
+			this.schema.create({
+				pk: '1234',
+				arrayOfObjectsField: [{fieldA: 1234}, {fieldA: '1234'}] // The array should have items of type Object
+			}).catch(function(err) {
+				err.message.should.equal('Property arrayOfObjectsField.of.fieldA[0] should be of type String');
 				done();
 			});
 		});

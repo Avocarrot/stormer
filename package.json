@@ -1,6 +1,6 @@
 {
   "name": "stormer",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "The flexible Node.js ORM",
   "main": "index.js",
   "directories": {
