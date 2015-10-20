@@ -1,5 +1,5 @@
 # Stormer
-The flexible Node.js ORM
+The flexible Node.js ORM.
 
 [![NPM](https://nodei.co/npm/openrtb.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/stomer/)
 
