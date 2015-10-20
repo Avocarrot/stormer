@@ -1,0 +1,38 @@
+{
+  "name": "stormer",
+  "version": "0.0.1",
+  "description": "The flexible Node.js ORM",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha --recursive test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Avocarrot/stormer.git"
+  },
+  "keywords": [
+    "orm",
+    "mysql",
+    "nosql",
+    "database",
+    "db"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Avocarrot/stormer/issues"
+  },
+  "homepage": "https://github.com/Avocarrot/stormer#readme",
+  "devDependencies": {
+    "chai": "^3.3.0",
+    "chai-things": "^0.2.0",
+    "mocha": "^2.3.3",
+    "sinon": "^1.17.1"
+  },
+  "dependencies": {
+    "bluebird": "^2.10.2"
+  }
+}

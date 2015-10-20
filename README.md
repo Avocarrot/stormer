@@ -1,6 +1,9 @@
 # Stormer
 The flexible Node.js ORM
 
+[![NPM](https://nodei.co/npm/openrtb.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/stomer/)
+
+
 ## Purpose
 Simplifies tasks such as creating and validating schemas for models as well as storing and getting entries from the database.
 
