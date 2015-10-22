@@ -1,7 +1,6 @@
 var chai = require('chai');
 var Schema = require('../lib/schema');
 chai.should();
-chai.use(require('chai-things'));
 
 describe('Schema Tests', function() {
 
@@ -23,33 +22,28 @@ describe('Schema Tests', function() {
 
 		it('parse schemas with simple and complex types', function() {
 			var schemaDef = {
-				simpleField: 'String',
-				complexField: {
+				simpleProperty: 'String',
+				complexProperty: {
 					type: 'String',
 					required: true
 				},
-				complexFieldWithDefault: {
+				complexPropertyWithDefault: {
 					type: 'String',
 					default: 'this is the default value'
 				}
 			};
 
 			var schema = new Schema(schemaDef);
-			schema.properties.length.should.equal(3);
-			schema.properties.should.include.something.that.deep.equals({
-				key: 'simpleField',
-				type: 'String'
-			});
-			schema.properties.should.include.something.that.deep.equals({
-				key: 'complexField',
-				type: 'String',
-				required: true
-			});
-			schema.properties.should.include.something.that.deep.equals({
-				key: 'complexFieldWithDefault',
-				type: 'String',
-				default: 'this is the default value'
-			});
+
+			schema.should.have.deep.property('schema.simpleProperty.type', 'String');
+			schema.should.have.deep.property('schema.simpleProperty.path', '.simpleProperty');
+
+			schema.should.have.deep.property('schema.complexProperty.type', 'String');
+			schema.should.have.deep.property('schema.complexProperty.path', '.complexProperty');
+
+			schema.should.have.deep.property('schema.complexPropertyWithDefault.type', 'String');
+			schema.should.have.deep.property('schema.complexPropertyWithDefault.path', '.complexPropertyWithDefault');
+			schema.should.have.deep.property('schema.complexPropertyWithDefault.default', 'this is the default value');
 		});
 
 		it('parse schemas with object types', function() {
@@ -70,28 +64,21 @@ describe('Schema Tests', function() {
 			};
 
 			var schema = new Schema(schemaDef);
-			schema.properties.length.should.equal(5);
-			schema.properties.should.include.something.that.deep.equals({
-				key: 'firstLevel',
-				type: 'Object'
-			});
-			schema.properties.should.include.something.that.deep.equals({
-				key: 'firstLevel.fieldA',
-				type: 'String'
-			});
-			schema.properties.should.include.something.that.deep.equals({
-				key: 'firstLevel.fieldB',
-				type: 'Number'
-			});
-			schema.properties.should.include.something.that.deep.equals({
-				key: 'firstLevel.secondLevel',
-				type: 'Object'
-			});
-			schema.properties.should.include.something.that.deep.equals({
-				key: 'firstLevel.secondLevel.fieldC',
-				type: 'String',
-				required: true
-			});
+			schema.should.have.deep.property('schema.firstLevel.type', 'Object');
+			schema.should.have.deep.property('schema.firstLevel.path', '.firstLevel');
+
+			schema.should.have.deep.property('schema.firstLevel.fieldA.type', 'String');
+			schema.should.have.deep.property('schema.firstLevel.fieldA.path', '.firstLevel.fieldA');
+
+			schema.should.have.deep.property('schema.firstLevel.fieldB.type', 'Number');
+			schema.should.have.deep.property('schema.firstLevel.fieldB.path', '.firstLevel.fieldB');
+
+			schema.should.have.deep.property('schema.firstLevel.secondLevel.type', 'Object');
+			schema.should.have.deep.property('schema.firstLevel.secondLevel.path', '.firstLevel.secondLevel');
+
+			schema.should.have.deep.property('schema.firstLevel.secondLevel.fieldC.type', 'String');
+			schema.should.have.deep.property('schema.firstLevel.secondLevel.fieldC.path', '.firstLevel.secondLevel.fieldC');
+			schema.should.have.deep.property('schema.firstLevel.secondLevel.fieldC.required', true);
 		});
 
 		it('parse schemas with array types', function() {
@@ -118,25 +105,21 @@ describe('Schema Tests', function() {
 			};
 
 			var schema = new Schema(schemaDef);
-			schema.properties.length.should.equal(4);
 
-			schema.properties.should.include.a.thing.with.property('key', 'ofStrings');
-			schema.properties.should.include.a.thing.with.property('type', 'Array');
-			schema.properties.should.include.a.thing.with.property('of');
+			schema.should.have.deep.property('schema.ofStrings.type', 'Array');
+			schema.should.have.deep.property('schema.ofStrings.path', '.ofStrings');
+			schema.should.have.deep.property('schema.ofStrings.of');
 
-			schema.properties.should.include.a.thing.with.property('key', 'ofComplexStrings');
-			schema.properties.should.include.a.thing.with.property('type', 'Array');
-			schema.properties.should.include.a.thing.with.property('of');
+			schema.should.have.deep.property('schema.ofComplexStrings.type', 'Array');
+			schema.should.have.deep.property('schema.ofComplexStrings.path', '.ofComplexStrings');
+			schema.should.have.deep.property('schema.ofComplexStrings.of');
 
-			schema.properties.should.include.something.that.deep.equals({
-				key: 'nestedObject',
-				type: 'Object'
-			});
+			schema.should.have.deep.property('schema.nestedObject.type', 'Object');
+			schema.should.have.deep.property('schema.nestedObject.path', '.nestedObject');
 
-			schema.properties.should.include.a.thing.with.property('key', 'nestedObject.nestedOfNumbers');
-			schema.properties.should.include.a.thing.with.property('type', 'Array');
-			schema.properties.should.include.a.thing.with.property('of');
-
+			schema.should.have.deep.property('schema.nestedObject.nestedOfNumbers.type', 'Array');
+			schema.should.have.deep.property('schema.nestedObject.nestedOfNumbers.path', '.nestedObject.nestedOfNumbers');
+			schema.should.have.deep.property('schema.nestedObject.nestedOfNumbers.of');
 		});
 
 	});
@@ -170,7 +153,7 @@ describe('Schema Tests', function() {
 			this.schema.create({
 				simpleField: 'this should be a number'
 			}).catch(function(err) {
-				err.message.should.equal('Property simpleField should be of type Number');
+				err.message.should.equal('Property .simpleField should be of type Number');
 				done();
 			});
 		});
@@ -179,7 +162,7 @@ describe('Schema Tests', function() {
 			this.schema.create({
 				complexField: 'this should be a number'
 			}).catch(function(err) {
-				err.message.should.equal('Property complexField should be of type Number');
+				err.message.should.equal('Property .complexField should be of type Number');
 				done();
 			});
 		});
@@ -188,7 +171,7 @@ describe('Schema Tests', function() {
 			this.schema.create({
 				nestedObject: 'this should be an object'
 			}).catch(function(err) {
-				err.message.should.equal('Property nestedObject should be of type Object');
+				err.message.should.equal('Property .nestedObject should be of type Object');
 				done();
 			});
 		});
@@ -199,7 +182,7 @@ describe('Schema Tests', function() {
 					stringField: 1234
 				}
 			}).catch(function(err) {
-				err.message.should.equal('Property nestedObject.stringField should be of type String');
+				err.message.should.equal('Property .nestedObject.stringField should be of type String');
 				done();
 			});
 		});
@@ -223,7 +206,7 @@ describe('Schema Tests', function() {
 
 			var schema = new Schema(schemaDef);	
 			schema.create({}).catch(function(err) {
-				err.message.should.equal('Property requiredProperty is required');
+				err.message.should.equal('Property .requiredProperty is required');
 				done();
 			});
 		});
@@ -256,7 +239,7 @@ describe('Schema Tests', function() {
 				this.schema.create({
 					ofStrings: 'this should be an array'
 				}).catch(function(err) {
-					err.message.should.equal('Property ofStrings should be of type Array');
+					err.message.should.equal('Property .ofStrings should be of type Array');
 					done();
 				});
 			});
@@ -265,7 +248,7 @@ describe('Schema Tests', function() {
 				this.schema.create({
 					ofStrings: ['1', 2, '3'] // The array should have items of type String
 				}).catch(function(err) {
-					err.message.should.equal('Property ofStrings[1].subSchema should be of type String');
+					err.message.should.equal('Property .ofStrings[1].subSchema should be of type String');
 					done();
 				});
 			});
@@ -274,7 +257,7 @@ describe('Schema Tests', function() {
 				this.schema.create({
 					ofObjects: [{fieldA: 1234}, {fieldA: '1234'}] // The array should have items of type Object
 				}).catch(function(err) {
-					err.message.should.equal('Property ofObjects[0].subSchema.fieldA should be of type String');
+					err.message.should.equal('Property .ofObjects[0].fieldA should be of type String');
 					done();
 				});
 			});
@@ -296,8 +279,8 @@ describe('Schema Tests', function() {
 				objWithDefaults.should.not.have.property('simpleField');
 				objWithDefaults.should.not.have.property('complexField');
 				objWithDefaults.should.not.have.property('arrayOfStringsField');
+				objWithDefaults.should.not.have.deep.property('nestedObject.nestedFieldWithDefault'); // Do not set nested default if the parent is not set
 				objWithDefaults.should.have.property('fieldWithDefault', 'this is the default value');
-				objWithDefaults.should.have.deep.property('nestedObject.nestedFieldWithDefault', 1234);
 				done();
 			});
 		});
@@ -307,6 +290,13 @@ describe('Schema Tests', function() {
 				fieldWithDefault: 'do not override me'
 			}).then(function(objWithDefaults) {
 				objWithDefaults.should.have.property('fieldWithDefault', 'do not override me');
+				done();
+			});
+		});
+
+		it.skip('not set a nested property if the parent one is not popuated', function(done) {
+			this.schema.create({}).then(function(obj) {
+				console.log(obj);
 				done();
 			});
 		});
