@@ -19,6 +19,14 @@ describe('Store Tests', function() {
 		store.models.myModel.should.be.an.instanceOf(Model);
 	});
 
+	it('Store.prototype.callModelFunction() should return an error if model is not defined', function(done) {
+		var store = new Store();
+		store.callModelFunction('myModel', 'get', '1234').catch(function(err) {
+			err.message.should.equal('Model myModel is not defined');
+			done();
+		});
+	});
+
 	it('Store.prototype.get() should call Model.prototype.get()', function(done) {
 		var store = new Store();
 		var pk = '1234';

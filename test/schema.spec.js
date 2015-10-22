@@ -294,13 +294,6 @@ describe('Schema Tests', function() {
 			});
 		});
 
-		it.skip('not set a nested property if the parent one is not popuated', function(done) {
-			this.schema.create({}).then(function(obj) {
-				console.log(obj);
-				done();
-			});
-		});
-
 	});
 	
 });
