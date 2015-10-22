@@ -1,7 +1,6 @@
 var chai = require('chai');
 var Schema = require('../lib/schema');
 chai.should();
-chai.use(require('chai-things'));
 
 describe('Schema Tests', function() {
 
@@ -13,7 +12,7 @@ describe('Schema Tests', function() {
 			}).should.throw('A schema definition object should be passed');
 		});
 
-		it('throw an error if field with unsupported type is passed', function() {
+		it('throw an error if property with unsupported type is passed', function() {
 			(function () {
 			  new Schema({
 			  	invalidField: 'InvalidType'
@@ -23,38 +22,28 @@ describe('Schema Tests', function() {
 
 		it('parse schemas with simple and complex types', function() {
 			var schemaDef = {
-				simpleField: 'String',
-				complexField: {
+				simpleProperty: 'String',
+				complexProperty: {
 					type: 'String',
 					required: true
 				},
-				complexFieldWithDefault: {
+				complexPropertyWithDefault: {
 					type: 'String',
 					default: 'this is the default value'
 				}
 			};
 
 			var schema = new Schema(schemaDef);
-			schema.properties.length.should.equal(4);
-			schema.properties.should.include.something.that.deep.equals({
-				key: 'simpleField',
-				type: 'String'
-			});
-			schema.properties.should.include.something.that.deep.equals({
-				key: 'complexField',
-				type: 'String',
-				required: true
-			});
-			schema.properties.should.include.something.that.deep.equals({
-				key: 'complexFieldWithDefault',
-				type: 'String',
-				default: 'this is the default value'
-			});
-			schema.properties.should.include.something.that.deep.equals({ 
-				key: 'pk',
-				type: 'String', 
-				required: true
-			});
+
+			schema.should.have.deep.property('schema.simpleProperty.type', 'String');
+			schema.should.have.deep.property('schema.simpleProperty.path', '.simpleProperty');
+
+			schema.should.have.deep.property('schema.complexProperty.type', 'String');
+			schema.should.have.deep.property('schema.complexProperty.path', '.complexProperty');
+
+			schema.should.have.deep.property('schema.complexPropertyWithDefault.type', 'String');
+			schema.should.have.deep.property('schema.complexPropertyWithDefault.path', '.complexPropertyWithDefault');
+			schema.should.have.deep.property('schema.complexPropertyWithDefault.default', 'this is the default value');
 		});
 
 		it('parse schemas with object types', function() {
@@ -75,43 +64,31 @@ describe('Schema Tests', function() {
 			};
 
 			var schema = new Schema(schemaDef);
-			schema.properties.length.should.equal(6);
-			schema.properties.should.include.something.that.deep.equals({
-				key: 'firstLevel',
-				type: 'Object'
-			});
-			schema.properties.should.include.something.that.deep.equals({
-				key: 'firstLevel.fieldA',
-				type: 'String'
-			});
-			schema.properties.should.include.something.that.deep.equals({
-				key: 'firstLevel.fieldB',
-				type: 'Number'
-			});
-			schema.properties.should.include.something.that.deep.equals({
-				key: 'firstLevel.secondLevel',
-				type: 'Object'
-			});
-			schema.properties.should.include.something.that.deep.equals({
-				key: 'firstLevel.secondLevel.fieldC',
-				type: 'String',
-				required: true
-			});
-			schema.properties.should.include.something.that.deep.equals({
-				key: 'pk',
-				type: 'String',
-				required: true
-			});
+			schema.should.have.deep.property('schema.firstLevel.type', 'Object');
+			schema.should.have.deep.property('schema.firstLevel.path', '.firstLevel');
+
+			schema.should.have.deep.property('schema.firstLevel.fieldA.type', 'String');
+			schema.should.have.deep.property('schema.firstLevel.fieldA.path', '.firstLevel.fieldA');
+
+			schema.should.have.deep.property('schema.firstLevel.fieldB.type', 'Number');
+			schema.should.have.deep.property('schema.firstLevel.fieldB.path', '.firstLevel.fieldB');
+
+			schema.should.have.deep.property('schema.firstLevel.secondLevel.type', 'Object');
+			schema.should.have.deep.property('schema.firstLevel.secondLevel.path', '.firstLevel.secondLevel');
+
+			schema.should.have.deep.property('schema.firstLevel.secondLevel.fieldC.type', 'String');
+			schema.should.have.deep.property('schema.firstLevel.secondLevel.fieldC.path', '.firstLevel.secondLevel.fieldC');
+			schema.should.have.deep.property('schema.firstLevel.secondLevel.fieldC.required', true);
 		});
 
 		it('parse schemas with array types', function() {
 
 			var schemaDef = {
-				arrayOfStrings: {
+				ofStrings: {
 					type: 'Array',
 					of: 'String'
 				},
-				arrayOfComplexStrings: {
+				ofComplexStrings: {
 					type: 'Array',
 					of: {
 						type: 'String',
@@ -120,7 +97,7 @@ describe('Schema Tests', function() {
 				},
 				nestedObject: {
 					type: 'Object',
-					nestedArrayOfNumbers: {
+					nestedOfNumbers: {
 						type: 'Array',
 						of: 'Number'
 					}
@@ -128,41 +105,21 @@ describe('Schema Tests', function() {
 			};
 
 			var schema = new Schema(schemaDef);
-			schema.properties.length.should.equal(8);
-			schema.properties.should.include.something.that.deep.equals({
-				key: 'arrayOfStrings',
-				type: 'Array'
-			});
-			schema.properties.should.include.something.that.deep.equals({
-				key: 'arrayOfStrings.of',
-				type: 'String'
-			});
-			schema.properties.should.include.something.that.deep.equals({
-				key: 'arrayOfComplexStrings',
-				type: 'Array'
-			});
-			schema.properties.should.include.something.that.deep.equals({
-				key: 'arrayOfComplexStrings.of',
-				type: 'String',
-				default: 'this is the default value'
-			});
-			schema.properties.should.include.something.that.deep.equals({
-				key: 'nestedObject',
-				type: 'Object'
-			});
-			schema.properties.should.include.something.that.deep.equals({
-				key: 'nestedObject.nestedArrayOfNumbers',
-				type: 'Array'
-			});
-			schema.properties.should.include.something.that.deep.equals({
-				key: 'nestedObject.nestedArrayOfNumbers.of',
-				type: 'Number'
-			});
-			schema.properties.should.include.something.that.deep.equals({
-				key: 'pk',
-				type: 'String',
-				required: true
-			});
+
+			schema.should.have.deep.property('schema.ofStrings.type', 'Array');
+			schema.should.have.deep.property('schema.ofStrings.path', '.ofStrings');
+			schema.should.have.deep.property('schema.ofStrings.of');
+
+			schema.should.have.deep.property('schema.ofComplexStrings.type', 'Array');
+			schema.should.have.deep.property('schema.ofComplexStrings.path', '.ofComplexStrings');
+			schema.should.have.deep.property('schema.ofComplexStrings.of');
+
+			schema.should.have.deep.property('schema.nestedObject.type', 'Object');
+			schema.should.have.deep.property('schema.nestedObject.path', '.nestedObject');
+
+			schema.should.have.deep.property('schema.nestedObject.nestedOfNumbers.type', 'Array');
+			schema.should.have.deep.property('schema.nestedObject.nestedOfNumbers.path', '.nestedObject.nestedOfNumbers');
+			schema.should.have.deep.property('schema.nestedObject.nestedOfNumbers.of');
 		});
 
 	});
@@ -179,18 +136,6 @@ describe('Schema Tests', function() {
 					type: 'String',
 					default: 'this is the default value'
 				},
-				arrayOfStringsField: {
-					type: 'Array',
-					of: 'String'
-				},
-				arrayOfObjectsField: {
-					type: 'Array',
-					of: {
-						type: 'Object',
-						fieldA: 'String',
-						fieldB: 'Number'
-					}
-				},
 				nestedObject: {
 					type: 'Object',
 					stringField: 'String',
@@ -204,51 +149,46 @@ describe('Schema Tests', function() {
 			this.schema = new Schema(schemaDef);			
 		});
 
-		it('return an error if a simple field has the wrong type', function(done) {
+		it('return an error if a simple property has the wrong type', function(done) {
 			this.schema.create({
-				pk: '1234',
 				simpleField: 'this should be a number'
 			}).catch(function(err) {
-				err.message.should.equal('Property simpleField should be of type Number');
+				err.message.should.equal('Property .simpleField should be of type Number');
 				done();
 			});
 		});
 
-		it('return an error if a complex field has the wrong type', function(done) {
+		it('return an error if a complex property has the wrong type', function(done) {
 			this.schema.create({
-				pk: '1234',
 				complexField: 'this should be a number'
 			}).catch(function(err) {
-				err.message.should.equal('Property complexField should be of type Number');
+				err.message.should.equal('Property .complexField should be of type Number');
 				done();
 			});
 		});
 
 		it('return an error if nested object has the wrong type', function(done) {
 			this.schema.create({
-				pk: '1234',
 				nestedObject: 'this should be an object'
 			}).catch(function(err) {
-				err.message.should.equal('Property nestedObject should be of type Object');
+				err.message.should.equal('Property .nestedObject should be of type Object');
 				done();
 			});
 		});
 
-		it('return an error if field in nested object has the wrong type', function(done) {
+		it('return an error if property in nested object has the wrong type', function(done) {
 			this.schema.create({
-				pk: '1234',
 				nestedObject: {
 					stringField: 1234
 				}
 			}).catch(function(err) {
-				err.message.should.equal('Property nestedObject.stringField should be of type String');
+				err.message.should.equal('Property .nestedObject.stringField should be of type String');
 				done();
 			});
 		});
 
-		it('ignore fields in the obj that are not defined by the schema', function(done) {
+		it('ignore properties in the obj that are not defined by the schema', function(done) {
 			this.schema.create({
-				pk: '1234',
 				notDefined: 'this is not in the schema'
 			}).then(function(obj) {
 				obj.should.not.have.property('notDefined');
@@ -256,73 +196,107 @@ describe('Schema Tests', function() {
 			});
 		});
 
-		it('return an error if required field is missing', function(done) {
-			this.schema.create({}).catch(function(err) {
-				err.message.should.equal('Property pk is required');
+		it('return an error if required property is missing', function(done) {
+			var schemaDef = {
+				requiredProperty: {
+					type: 'Number',
+					required: true
+				}
+			};
+
+			var schema = new Schema(schemaDef);	
+			schema.create({}).catch(function(err) {
+				err.message.should.equal('Property .requiredProperty is required');
 				done();
 			});
 		});
 
-		it('return an error if an array field has the wrong type', function(done) {
-			this.schema.create({
-				pk: '1234',
-				arrayOfStringsField: 'this should be an array'
-			}).catch(function(err) {
-				err.message.should.equal('Property arrayOfStringsField should be of type Array');
-				done();
-			});
-		});
+		describe('work with Array properties and', function() {
 
-		it('return an error if an array field has items with the wrong type', function(done) {
-			this.schema.create({
-				pk: '1234',
-				arrayOfStringsField: ['1', 2, '3'] // The array should have items of type String
-			}).catch(function(err) {
-				err.message.should.equal('Element at index 1 of property arrayOfStringsField.of should be of type String');
-				done();
+			before(function() {
+				var schemaDef = {
+					ofNumbers: {
+						type: 'Array',
+						of: 'Number'
+					},
+					ofStrings: {
+						type: 'Array',
+						of: 'String'
+					},
+					ofObjects: {
+						type: 'Array',
+						of: {
+							type: 'Object',
+							fieldA: 'String',
+							fieldB: 'Number'
+						}
+					}
+				};
+				this.schema = new Schema(schemaDef);
 			});
-		});
 
-		it('return an error if an array of objects has items with the wrong type', function(done) {
-			this.schema.create({
-				pk: '1234',
-				arrayOfObjectsField: [{fieldA: 1234}, {fieldA: '1234'}] // The array should have items of type Object
-			}).catch(function(err) {
-				err.message.should.equal('Element at index 0 of property arrayOfObjectsField.of.fieldA should be of type String');
-				done();
+			it('return an error if an array property has the wrong type', function(done) {
+				this.schema.create({
+					ofStrings: 'this should be an array'
+				}).catch(function(err) {
+					err.message.should.equal('Property .ofStrings should be of type Array');
+					done();
+				});
 			});
-		});
 
-		it('create objects with properties of type array', function(done) {
-			this.schema.create({
-				pk: '1234',
-				arrayOfObjectsField: [{fieldA: '1234'}, {fieldA: '1234'}] 
-			}).then(function(instance) {
-				instance.should.have.deep.property('arrayOfObjectsField[0].fieldA', '1234');
-				instance.should.have.deep.property('arrayOfObjectsField[1].fieldA', '1234');
-				done();
+			it('return an error if an array property has items with the wrong type', function(done) {
+				this.schema.create({
+					ofStrings: ['1', 2, '3'] // The array should have items of type String
+				}).catch(function(err) {
+					err.message.should.equal('Property .ofStrings[1].subSchema should be of type String');
+					done();
+				});
 			});
+
+			it('return an error if an array of objects has items with the wrong type', function(done) {
+				this.schema.create({
+					ofObjects: [{fieldA: 1234}, {fieldA: '1234'}] // The array should have items of type Object
+				}).catch(function(err) {
+					err.message.should.equal('Property .ofObjects[0].fieldA should be of type String');
+					done();
+				});
+			});
+
+			it('create objects with properties of type array', function(done) {
+				this.schema.create({
+					ofObjects: [{fieldA: '1234'}, {fieldA: '1234'}] 
+				}).then(function(instance) {
+					instance.should.have.deep.property('ofObjects[0].fieldA', '1234');
+					instance.should.have.deep.property('ofObjects[1].fieldA', '1234');
+					done();
+				});
+			});
+
 		});
 
 		it('set the default values', function(done) {
-			this.schema.create({
-				pk: '1234'
-			}).then(function(objWithDefaults) {
+			this.schema.create({}).then(function(objWithDefaults) {
 				objWithDefaults.should.not.have.property('simpleField');
 				objWithDefaults.should.not.have.property('complexField');
 				objWithDefaults.should.not.have.property('arrayOfStringsField');
+				objWithDefaults.should.not.have.deep.property('nestedObject.nestedFieldWithDefault'); // Do not set nested default if the parent is not set
 				objWithDefaults.should.have.property('fieldWithDefault', 'this is the default value');
-				objWithDefaults.should.have.deep.property('nestedObject.nestedFieldWithDefault', 1234);
 				done();
 			});
 		});
 
 		it('not set a default value if one is already set by the user', function(done) {
 			this.schema.create({
-				pk: '1234',
 				fieldWithDefault: 'do not override me'
 			}).then(function(objWithDefaults) {
 				objWithDefaults.should.have.property('fieldWithDefault', 'do not override me');
+				done();
+			});
+		});
+
+		it.skip('not set a nested property if the parent one is not popuated', function(done) {
+			this.schema.create({}).then(function(obj) {
+				console.log(obj);
 				done();
 			});
 		});
