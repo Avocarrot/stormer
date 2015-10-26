@@ -93,12 +93,12 @@ describe('Model Tests', function() {
 			var that = this;
 			var schema = this.model.schema;
 
-			sandbox.stub(this.mockStore, 'createEntry').returns(Promise.resolve(this.instance));
+			sandbox.stub(this.mockStore, 'setEntry').returns(Promise.resolve(this.instance));
 			sandbox.stub(schema, 'create').returns(Promise.resolve(this.instance));
 
 			this.model.create(this.instance, this.mockStore).then(function(createdInstance) {
-				that.mockStore.createEntry.calledOnce.should.be.true;	
-				that.mockStore.createEntry.calledWith(that.instance).should.be.true;
+				that.mockStore.setEntry.calledOnce.should.be.true;	
+				that.mockStore.setEntry.calledWith(that.instance).should.be.true;
 				schema.create.calledOnce.should.be.true;
 				schema.create.calledWith(that.instance).should.be.true;
 				createdInstance.should.equal(that.instance);
