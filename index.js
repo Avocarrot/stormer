@@ -1,1 +1,2 @@
-module.exports = require('./lib/store');
+exports.Store = require('./lib/store');
+exports.errors = require('./lib/errors');
