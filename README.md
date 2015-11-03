@@ -15,6 +15,7 @@ Simplifies tasks such as creating and validating schemas for models as well as s
 - [Get instance](#get-instance)
 - [Update instance](#update-instance)
 - [Schemas](#schemas)
+- [Errors](#errors)
 - [Contributing](#contributing)
 
 
@@ -24,13 +25,13 @@ Simplifies tasks such as creating and validating schemas for models as well as s
 
 ## Quick Start
 
-### 1. Create a new store 
+**1. Create a new store**
 
 ```javascript
 var store = new Store();
 ```
 
-### 2. Define a new model and its schema
+**2. Define a new model and its schema**
 
 ```javascript
 var store = new Store();
@@ -49,7 +50,7 @@ var userSchema = {
 store.define('users', userSchema);
 ```
 
-### 3. Implement the required store methods 
+**3. Implement the required store methods**
 
 ```javascript
 store.getEntry = function(query) {
@@ -75,6 +76,8 @@ store.create('users', {
     age: 12
 }).then(function(newInstance) {
     // Do something with the instance
+}).catch(ValidationError, function(err) {
+    // Handle a validation error 
 }).catch(function(err) {
     // Handle error 
 }); 
@@ -137,6 +140,14 @@ var schema = {
     }
 };
 ```
+
+## Errors
+
+You can import the errors using ``` require('stormer').errors.<errorName> ```
+
+- ```ValidationError```: This error indicates that an operation failed because object didn't conform with the model's schema
+
+- ```NotFoundError```: This error indicates that the object was not found in the store
 
 ## Contributing
 
