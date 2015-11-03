@@ -10,7 +10,11 @@ Simplifies tasks such as creating and validating schemas for models as well as s
 
 ## Contents
 - [Installation](#installation)
-- [Examples](#contributing)
+- [Quick Start](#quick-start)
+- [Create instance](#create-instance)
+- [Get instance](#get-instance)
+- [Update instance](#update-instance)
+- [Schemas](#schemas)
 - [Contributing](#contributing)
 
 
@@ -18,19 +22,23 @@ Simplifies tasks such as creating and validating schemas for models as well as s
 
 ```npm install stormer```
 
-## Examples
+## Quick Start
 
-**Example 1: Create a store**
+### 1. Create a new store 
 
 ```javascript
 var store = new Store();
 ```
 
-**Example 2: Define a new model and its schema**
+### 2. Define a new model and its schema
+
 ```javascript
 var store = new Store();
 
-var schema = {
+var userSchema = {
+    id: {
+        'String'
+    },
     firstName: 'String',
     age: {
         type: 'Number',
@@ -38,45 +46,73 @@ var schema = {
     }
 };
 
-store.define('myModel', schema);
+store.define('users', userSchema);
 ```
 
-**Example 3: Create and update an item**
+### 3. Implement the required store methods 
 
 ```javascript
+store.getEntry = function(query) {
+    // Use query to fetch entry from your db of choice
+    // Returns a Promise
+    // Resolve the promise with the entry as the value if found
+    // Resolve the promise with empty value if not found or reject with a NotFoundError 
+};
 
-store.create('myModel', {pk: '1234', firstName: 'George', age: 12}).then(function(instance) {
-    instance.firstName = 'Rafael';
-    instance.save().then(function() {
-        store.get('1234').then(function(instance) {
-            console.log(instance.firstName); // This prints 'Rafael'
-        });    
-   });
+store.setEntry = function(obj) {
+    // Use obj to create or update the entry in the db of choice
+    // Returns a Promise
+    // Resolve the promise with an empty value
+};
+```
+
+## Create instance
+
+```javascript
+store.create('users', {
+    id: '1234', 
+    firstName: 'George', 
+    age: 12
+}).then(function(newInstance) {
+    // Do something with the instance
+}).catch(function(err) {
+    // Handle error 
 }); 
 ```
 
-**Example 4: Store will throw an error if the object doesn't conform with the schema**
+## Get instance
 
 ```javascript
-// Age should be a Number
-store.create('myModel', {pk: '1234', firstName: 'George', age: '12'}).catch(function(err) {
-    //Catch a validation error here
+store.get('users', {
+    id: '1234'
+}).then(function(instance) {
+    // Do something with the instance
+}).catch(NotFoundError, function(err) {
+    //Handle NotFoundError
+}).catch(function(err) {
+    // Handle generic error
 }); 
 ```
 
-**Example 5: Store will throw an error if we try to get an item it doesn't exist**
+## Update instance
 
 ```javascript
-store.get('myModel', 'invalid-id').catch(function(err) {
-    //Catch a NotFoundError here
-}); 
+store.get('users', {
+    id: '1234',
+    firstName: "George",
+    age: 15
+}).then(function(updatedInstance) {
+    // Do something with the instance
+}).catch(function(err) {
+    // Handle error
+});
 ```
 
-**Example 6: Nested schemas a.k.a object types**
+## Schemas
+
+**Nested schemas a.k.a object types**
 
 ```javascript
-var store = new Store();
-
 // Defines an 'address'' property with nested schema
 var schema = {
     name: 'String',
@@ -87,15 +123,11 @@ var schema = {
         poBox: 'Number'
     }
 };
-
-store.define('myModel', schema);
 ```
 
-**Example 7: Define schemas with Array types**
+**Define schemas with Array types**
 
 ```javascript
-var store = new Store();
-
 // Defines a 'friends' property with Array type
 var schema = {
     firstName: 'String',
@@ -104,8 +136,6 @@ var schema = {
         of: 'String'
     }
 };
-
-store.define('myModel', schema);
 ```
 
 ## Contributing
