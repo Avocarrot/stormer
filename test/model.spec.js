@@ -107,29 +107,5 @@ describe('Model Tests', function() {
 		});
 
 	});
-
-	describe('Model.prototype.update() should', function() {
-
-		it.skip('update and save a valid instance', function(done) {
-
-			/** Note: Fix this test. It calles the schema.create which creates a new instance **/
-
-			var that = this;
-
-			sandbox.stub(this.model.schema, 'create').returns(Promise.resolve(this.instance));
-			sandbox.stub(this.mockStore, 'updateEntry').returns(Promise.resolve(this.instance));
-
-			this.model.update(this.instance, this.mockStore).then(function(instance) {
-				that.model.schema.create.calledOnce.should.be.true;
-				that.model.schema.create.calledWith(that.instance).should.be.true;
-				that.mockStore.updateEntry.calledOnce.should.be.true;
-				that.mockStore.updateEntry.calledWith(that.instance.pk, that.instance).should.be.true;
-				instance.should.equal(that.instance);
-				done();
-			}).catch(done);
-
-		});
-
-	});
 	
 });

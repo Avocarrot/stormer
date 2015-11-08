@@ -15,7 +15,7 @@ describe('Schema Tests', function() {
 		it('throw an error if property with unsupported type is passed', function() {
 			(function () {
 			  new Schema({
-			  	invalidField: 'InvalidType'
+				invalidField: 'InvalidType'
 			  });
 			}).should.throw('Type InvalidType is not supported');
 		});
@@ -228,7 +228,10 @@ describe('Schema Tests', function() {
 						of: {
 							type: 'Object',
 							fieldA: 'String',
-							fieldB: 'Number'
+							fieldB: {
+								type: 'Number',
+								default: 100
+							}
 						}
 					}
 				};
@@ -246,9 +249,9 @@ describe('Schema Tests', function() {
 
 			it('return an error if an array property has items with the wrong type', function(done) {
 				this.schema.create({
-					ofStrings: ['1', 2, '3'] // The array should have items of type String
+					ofStrings: ['1', '2', 3, '4', '5'] // The array should have items of type String
 				}).catch(function(err) {
-					err.message.should.equal('Property .ofStrings[1].subSchema should be of type String');
+					err.message.should.equal('Property .ofStrings[2].subSchema should be of type String');
 					done();
 				});
 			});
@@ -270,6 +273,16 @@ describe('Schema Tests', function() {
 					instance.should.have.deep.property('ofObjects[1].fieldA', '1234');
 					done();
 				});
+			});
+
+			it('set the defaults for properties of type array', function(done) {
+				this.schema.create({
+					ofObjects: [{fieldA: '1234'}] 
+				}).then(function(instance) {
+					instance.should.have.deep.property('ofObjects[0].fieldA', '1234');
+					instance.should.have.deep.property('ofObjects[0].fieldB', 100);
+					done();
+				}).catch(done);
 			});
 
 		});
