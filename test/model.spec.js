@@ -73,7 +73,7 @@ describe('Model Tests', function() {
 	
 	});
 
-	describe('Model.prototype.create() should', function() {
+	describe('Model.prototype.set() should', function() {
 
 		it('return an error if schema has failed to create new instance', function(done) {
 			var that = this;
@@ -81,7 +81,7 @@ describe('Model Tests', function() {
 
 			sandbox.stub(schema, 'create').returns(Promise.reject(new Error('Schema.prototype.create() failed')));
 
-			this.model.create(this.instance, this.mockStore).catch(function(err) {
+			this.model.set(this.instance, this.mockStore).catch(function(err) {
 				schema.create.calledOnce.should.be.true;
 				schema.create.calledWith(that.instance).should.be.true;
 				err.message.should.equal('Schema.prototype.create() failed');
@@ -89,14 +89,14 @@ describe('Model Tests', function() {
 			}).catch(done);
 		});
 
-		it('create and save a valid instance', function(done) {
+		it('save a valid instance', function(done) {
 			var that = this;
 			var schema = this.model.schema;
 
 			sandbox.stub(this.mockStore, 'setEntry').returns(Promise.resolve(this.instance));
 			sandbox.stub(schema, 'create').returns(Promise.resolve(this.instance));
 
-			this.model.create(this.instance, this.mockStore).then(function(createdInstance) {
+			this.model.set(this.instance, this.mockStore).then(function(createdInstance) {
 				that.mockStore.setEntry.calledOnce.should.be.true;	
 				that.mockStore.setEntry.calledWith(that.instance).should.be.true;
 				schema.create.calledOnce.should.be.true;

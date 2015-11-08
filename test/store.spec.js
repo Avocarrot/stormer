@@ -41,13 +41,13 @@ describe('Store Tests', function() {
 		}).catch(done);
 	});
 
-	it('Store.prototype.create() should call Model.prototype.create()', function(done) {
+	it('Store.prototype.create() should call Model.prototype.set()', function(done) {
 		var store = new Store();
 		var fakeObj = { pk: '1234'};
 		var createSpy = sandbox.spy();
 
 		store.define('myModel', {});
-		store.models.myModel.create = createSpy;
+		store.models.myModel.set = createSpy;
 		store.create('myModel', fakeObj).then(function() {
 			createSpy.called.should.be.true;
 			createSpy.calledWith(fakeObj, store);
@@ -55,13 +55,13 @@ describe('Store Tests', function() {
 		}).catch(done);
 	});
 
-	it('Store.prototype.update() should call Model.prototype.update()', function(done) {
+	it('Store.prototype.update() should call Model.prototype.set()', function(done) {
 		var store = new Store();
 		var fakeObj = { pk: '1234'};
 		var updateSpy = sandbox.spy();
 
 		store.define('myModel', {});
-		store.models.myModel.update = updateSpy;
+		store.models.myModel.set = updateSpy;
 		store.update('myModel', fakeObj).then(function() {
 			updateSpy.called.should.be.true;
 			updateSpy.calledWith(fakeObj, store);
