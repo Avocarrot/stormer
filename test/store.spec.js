@@ -36,7 +36,7 @@ describe('Store Tests', function() {
 		store.models.myModel.get = getSpy;
 		store.get('myModel', pk).then(function() {
 			getSpy.called.should.be.true;
-			getSpy.calledWith(pk, store);
+			getSpy.calledWith(pk, store).should.be.true;
 			done();
 		}).catch(done);
 	});
@@ -50,7 +50,7 @@ describe('Store Tests', function() {
 		store.models.myModel.set = createSpy;
 		store.create('myModel', fakeObj).then(function() {
 			createSpy.called.should.be.true;
-			createSpy.calledWith(fakeObj, store);
+			createSpy.calledWith(fakeObj, 'create', store).should.be.true;
 			done();
 		}).catch(done);
 	});
@@ -64,7 +64,7 @@ describe('Store Tests', function() {
 		store.models.myModel.set = updateSpy;
 		store.update('myModel', fakeObj).then(function() {
 			updateSpy.called.should.be.true;
-			updateSpy.calledWith(fakeObj, store);
+			updateSpy.calledWith(fakeObj, 'update', store).should.be.true;
 			done();
 		}).catch(done);
 	});
@@ -78,7 +78,7 @@ describe('Store Tests', function() {
 		store.models.myModel.delete = deleteSpy;
 		store.delete('myModel', pk).then(function() {
 			deleteSpy.called.should.be.true;
-			deleteSpy.calledWith(pk, store);
+			deleteSpy.calledWith(pk, store).should.be.true;
 			done();
 		}).catch(done);
 	});

@@ -96,7 +96,7 @@ describe('Model Tests', function() {
 			sandbox.stub(this.mockStore, 'setEntry').returns(Promise.resolve(this.instance));
 			sandbox.stub(schema, 'create').returns(Promise.resolve(this.instance));
 
-			this.model.set(this.instance, this.mockStore).then(function(createdInstance) {
+			this.model.set(this.instance, false, this.mockStore).then(function(createdInstance) {
 				that.mockStore.setEntry.calledOnce.should.be.true;	
 				that.mockStore.setEntry.calledWith(that.instance).should.be.true;
 				schema.create.calledOnce.should.be.true;
