@@ -228,7 +228,10 @@ describe('Schema Tests', function() {
 						of: {
 							type: 'Object',
 							fieldA: 'String',
-							fieldB: 'Number'
+							fieldB: {
+								type: 'Number',
+								default: 100
+							}
 						}
 					}
 				};
@@ -270,6 +273,16 @@ describe('Schema Tests', function() {
 					instance.should.have.deep.property('ofObjects[1].fieldA', '1234');
 					done();
 				});
+			});
+
+			it('set the defaults for properties of type array', function(done) {
+				this.schema.create({
+					ofObjects: [{fieldA: '1234'}] 
+				}).then(function(instance) {
+					instance.should.have.deep.property('ofObjects[0].fieldA', '1234');
+					instance.should.have.deep.property('ofObjects[0].fieldB', 100);
+					done();
+				}).catch(done);
 			});
 
 		});

@@ -149,6 +149,8 @@ You can import the errors using ``` require('stormer').errors.<errorName> ```
 
 - ```NotFoundError```: This error indicates that the object was not found in the store
 
+- ```AlreadyExistsError```: This error indicates that the object already exists in the store
+
 ## Contributing
 
 This project is work in progress and we'd love more people contributing to it. 
