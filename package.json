@@ -7,7 +7,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "mocha --recursive test"
+    "test": "NODE_ENV=test mocha --recursive test",
+    "cov": "NODE_ENV=test istanbul cover node_modules/.bin/_mocha -- --recursive -R spec"
   },
   "repository": {
     "type": "git",
