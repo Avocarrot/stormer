@@ -122,6 +122,27 @@ describe('Schema Tests', function() {
 			schema.should.have.deep.property('schema.nestedObject.nestedOfNumbers.of');
 		});
 
+		it('parse schemas with boolean types', function() {
+
+			var schemaDef = {
+				simpleBoolean: 'Boolean',
+				complexBoolean: {
+					type: 'Boolean',
+					default: true
+				}
+			};
+
+			var schema = new Schema(schemaDef);
+
+			schema.should.have.deep.property('schema.simpleBoolean.type', 'Boolean');
+			schema.should.have.deep.property('schema.simpleBoolean.path', '.simpleBoolean');
+
+			schema.should.have.deep.property('schema.complexBoolean.type', 'Boolean');
+			schema.should.have.deep.property('schema.complexBoolean.path', '.complexBoolean');
+			schema.should.have.deep.property('schema.complexBoolean.default', true);
+
+		});
+
 	});
 
 	describe('Schema.prototype.create() should', function() {
@@ -147,6 +168,20 @@ describe('Schema Tests', function() {
 			};
 
 			this.schema = new Schema(schemaDef);			
+		});
+
+		it('return an error if a boolean property has the wrong type', function(done) {
+			var schemaDef = {
+				bool: 'Boolean'
+			};
+
+			var schema = new Schema(schemaDef);	
+			schema.create({
+				bool: 'this should be a boolean'
+			}).catch(function(err) {
+				err.message.should.equal('Property .bool should be of type Boolean');
+				done();
+			});
 		});
 
 		it('return an error if a simple property has the wrong type', function(done) {
