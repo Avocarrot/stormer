@@ -13,6 +13,7 @@ Simplifies tasks such as creating and validating schemas for models as well as s
 - [Quick Start](#quick-start)
 - [Create instance](#create-instance)
 - [Get instance](#get-instance)
+- [Filter instances](#filter-instances)
 - [Update instance](#update-instance)
 - [Schemas](#schemas)
 - [Errors](#errors)
