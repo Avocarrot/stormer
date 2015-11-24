@@ -53,14 +53,20 @@ store.define('users', userSchema);
 **3. Implement the required store methods**
 
 ```javascript
-store.getEntry = function(query) {
-    // Use query to fetch entry from your db of choice
+store._get = function(pk) {
+    // Use pk to fetch single entry from your db of choice
     // Returns a Promise
     // Resolve the promise with the entry as the value if found
     // Resolve the promise with empty value if not found or reject with a NotFoundError 
 };
 
-store.setEntry = function(obj) {
+store._filter = function(query) {
+    // Use query to fetch multiple entries matching the query from your db of choice
+    // Returns a Promise
+    // Resolve the promise with an array of entries or an empty array if none is mathcing
+};
+
+store._set = function(obj) {
     // Use obj to create or update the entry in the db of choice
     // Returns a Promise
     // Resolve the promise with an empty value
@@ -86,12 +92,22 @@ store.create('users', {
 ## Get instance
 
 ```javascript
-store.get('users', {
-    id: '1234'
-}).then(function(instance) {
+store.get('users', '1234').then(function(instance) {
     // Do something with the instance
 }).catch(NotFoundError, function(err) {
     //Handle NotFoundError
+}).catch(function(err) {
+    // Handle generic error
+}); 
+```
+
+## Filter instances
+
+```javascript
+store.filter('users', {
+    name: 'George'
+}).then(function(instances) {
+    // Do something with the instances
 }).catch(function(err) {
     // Handle generic error
 }); 

@@ -46,11 +46,11 @@ describe('Model Tests', function() {
 
 		it('return the instance if it is found', function(done) {
 			var that = this;
-			sandbox.stub(this.mockStore, 'getEntry').returns(Promise.resolve(this.instance));
+			sandbox.stub(this.mockStore, '_get').returns(Promise.resolve(this.instance));
 
 			this.model.get('1234', this.mockStore).then(function(instance){
-				that.mockStore.getEntry.calledOnce.should.be.true;
-				that.mockStore.getEntry.calledWith(that.instance.pk).should.be.true;
+				that.mockStore._get.calledOnce.should.be.true;
+				that.mockStore._get.calledWith(that.instance.pk).should.be.true;
 				instance.should.equal(that.instance);
 				done();
 			});
@@ -60,17 +60,32 @@ describe('Model Tests', function() {
 		it('return an error if the instance is not found', function(done) {
 			var that = this;
 
-			sandbox.stub(this.mockStore, 'getEntry').returns(Promise.reject(new NotFoundError('Instance with pk 1234 is not found')));
+			sandbox.stub(this.mockStore, '_get').returns(Promise.reject(new NotFoundError('Instance with pk 1234 is not found')));
 
 			this.model.get('1234', this.mockStore).catch(function(err){
-				that.mockStore.getEntry.calledOnce.should.be.true;
-				that.mockStore.getEntry.calledWith(that.instance.pk).should.be.true;
+				that.mockStore._get.calledOnce.should.be.true;
+				that.mockStore._get.calledWith(that.instance.pk).should.be.true;
 				err.message.should.equal('Instance with pk 1234 is not found');
 				done();
 			});
 
 		});
 	
+	});
+
+	it('Model.prototype.filter(query) should call Store.prototype._filter(query)', function() {
+		var that = this;
+		var query = {
+			fieldA: 1
+		};
+		sandbox.stub(this.mockStore, '_filter').returns(Promise.resolve([this.instance, this.instance]));
+
+		this.model.filter(query, this.mockStore).then(function(instances){
+			that.mockStore._filter.calledOnce.should.be.true;
+			that.mockStore._filter.calledWith(query).should.be.true;
+			instances.length.should.equal(2);
+			done();
+		});
 	});
 
 	describe('Model.prototype.set() should', function() {
@@ -93,12 +108,12 @@ describe('Model Tests', function() {
 			var that = this;
 			var schema = this.model.schema;
 
-			sandbox.stub(this.mockStore, 'setEntry').returns(Promise.resolve(this.instance));
+			sandbox.stub(this.mockStore, '_set').returns(Promise.resolve(this.instance));
 			sandbox.stub(schema, 'create').returns(Promise.resolve(this.instance));
 
 			this.model.set(this.instance, 'create', this.mockStore).then(function(createdInstance) {
-				that.mockStore.setEntry.calledOnce.should.be.true;	
-				that.mockStore.setEntry.calledWith(that.instance).should.be.true;
+				that.mockStore._set.calledOnce.should.be.true;	
+				that.mockStore._set.calledWith(that.instance).should.be.true;
 				schema.create.calledOnce.should.be.true;
 				schema.create.calledWith(that.instance).should.be.true;
 				createdInstance.should.equal(that.instance);
