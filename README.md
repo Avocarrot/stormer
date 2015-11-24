@@ -39,7 +39,8 @@ var store = new Store();
 
 var userSchema = {
     id: {
-        'String'
+        type: 'String',
+        primaryKey: true
     },
     firstName: 'String',
     age: {
@@ -129,6 +130,20 @@ store.get('users', {
 ```
 
 ## Schemas
+
+**Define a primary key**
+
+Any field can be designated as the primary key. Only one field can be designated as the primary key.
+
+```javascript
+// Defines the 'id' field as the primary key
+var schema = {
+    id: {
+        type: 'String',
+        primaryKey: true
+    }
+};
+```
 
 **Nested schemas a.k.a object types**
 
