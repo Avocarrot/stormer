@@ -41,6 +41,22 @@ describe('Store Tests', function() {
 		}).catch(done);
 	});
 
+	it('Store.prototype.filter() should call Model.prototype.filter()', function(done) {
+		var store = new Store();
+		var query = {
+			fieldA: 1
+		};
+		var filterSpy = sandbox.spy();
+
+		store.define('myModel', {});
+		store.models.myModel.filter = filterSpy;
+		store.filter('myModel', query).then(function() {
+			filterSpy.called.should.be.true;
+			filterSpy.calledWith(query, store).should.be.true;
+			done();
+		}).catch(done);
+	});
+
 	it('Store.prototype.create() should call Model.prototype.set()', function(done) {
 		var store = new Store();
 		var fakeObj = { pk: '1234'};
