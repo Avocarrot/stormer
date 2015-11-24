@@ -71,7 +71,7 @@ store._filter = function(query) {
 store._set = function(obj) {
     // Use obj to create or update the entry in the db of choice
     // Returns a Promise
-    // Resolve the promise with an empty value
+    // Resolve the promise with the set obj
 };
 ```
 
