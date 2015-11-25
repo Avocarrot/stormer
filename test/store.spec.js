@@ -2,6 +2,7 @@ var chai = require('chai');
 var sinon = require('sinon');
 var Store = require('../lib/store');
 var Model = require('../lib/model');
+var util = require('util');
 chai.should();
 
 var sandbox = sinon.sandbox.create();
@@ -98,5 +99,20 @@ describe('Store Tests', function() {
 			done();
 		}).catch(done);
 	});
+
+  it('Store.prototype.alias() should decoreate model name', function(done) {
+    var store = new Store();
+    store.alias = function(name) {
+      return util.format('%s.%s', 'test', name);
+    };
+    var expected = 'test.x';
+    var actual = store.alias('x');
+    expected.should.equal(actual);
+
+    store.define('myModel', {});
+		store.models.should.have.property('test.myModel');
+    store.models['test.myModel'].should.be.an.instanceOf(Model);
+    done();
+  });
 	
 });
