@@ -35,6 +35,16 @@ describe('Schema Tests', function() {
 			}).should.throw('Only one field can be designated as the primary key');
 		});
 
+		it('parse and set the primary key', function() {
+		  	var schema = new Schema({
+				pk: {
+					type: 'String',
+					primaryKey: true
+				}
+			});
+			schema.should.have.property('primaryKey', 'pk')
+		});
+
 		it('parse schemas with simple and complex types', function() {
 			var schemaDef = {
 				simpleProperty: 'String',
