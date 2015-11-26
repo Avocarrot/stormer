@@ -1,100 +1,95 @@
 var chai = require('chai');
 var sinon = require('sinon');
 var Store = require('../lib/store');
-var Model = require('../lib/model');
 chai.should();
 
 var sandbox = sinon.sandbox.create();
 
 describe('Store Tests', function() {
 
+	var store;
+
+	beforeEach(function() {
+		store = new Store();		
+	});
+
 	afterEach(function() {
 		sandbox.restore();
 	});
 
-	it('Store.prototype.define() should define a new model', function() {
-		var store = new Store();
-		store.define('myModel', {});
-		store.models.should.have.property('myModel');
-		store.models.myModel.should.be.an.instanceOf(Model);
-	});
+	describe('Store.prototype.define() should', function() {
 
-	it('Store.prototype.callModelFunction() should return an error if model is not defined', function(done) {
-		var store = new Store();
-		store.callModelFunction('myModel', 'get', '1234').catch(function(err) {
-			err.message.should.equal('Model myModel is not defined');
-			done();
+		it('throw an error if no schema is passed', function() {
+			(function () {
+				store.define('myModel');
+			}).should.throw('Cannot define model without schema');
 		});
+
+		it('define a new model', function() {
+			store.define('myModel', {});
+			store.models.should.have.property('myModel');
+		});
+
 	});
 
-	it('Store.prototype.get() should call Model.prototype.get()', function(done) {
-		var store = new Store();
+	it('Store.prototype.get() should call Store.prototype._get()', function(done) {
 		var pk = '1234';
-		var getSpy = sandbox.spy();
+		var getStub = sandbox.stub(store, '_get').returns(Promise.resolve());
 
-		store.define('myModel', {});
-		store.models.myModel.get = getSpy;
+		var model = store.define('myModel', {});
 		store.get('myModel', pk).then(function() {
-			getSpy.called.should.be.true;
-			getSpy.calledWith(pk, store).should.be.true;
+			getStub.called.should.be.true;
+			getStub.calledWith(model, pk).should.be.true;
 			done();
 		}).catch(done);
 	});
 
-	it('Store.prototype.filter() should call Model.prototype.filter()', function(done) {
-		var store = new Store();
+	it('Store.prototype.filter() should call Store.prototype._filter()', function(done) {
 		var query = {
 			fieldA: 1
 		};
-		var filterSpy = sandbox.spy();
+		var filterStub = sandbox.stub(store, '_filter').returns(Promise.resolve([{}, {}]));
 
-		store.define('myModel', {});
-		store.models.myModel.filter = filterSpy;
+		var model = store.define('myModel', {});
 		store.filter('myModel', query).then(function() {
-			filterSpy.called.should.be.true;
-			filterSpy.calledWith(query, store).should.be.true;
+			filterStub.called.should.be.true;
+			filterStub.calledWith(model, query).should.be.true;
 			done();
 		}).catch(done);
 	});
 
-	it('Store.prototype.create() should call Model.prototype.set()', function(done) {
-		var store = new Store();
+	it('Store.prototype.create() should call Store.prototype._set()', function(done) {
 		var fakeObj = { pk: '1234'};
-		var createSpy = sandbox.spy();
+		var createStub = sandbox.stub(store, '_set').returns(Promise.resolve());
 
-		store.define('myModel', {});
-		store.models.myModel.set = createSpy;
+		var model = store.define('myModel', { pk: 'String' });
 		store.create('myModel', fakeObj).then(function() {
-			createSpy.called.should.be.true;
-			createSpy.calledWith(fakeObj, 'create', store).should.be.true;
+			createStub.called.should.be.true;
+			createStub.calledWith(model, fakeObj, 'create').should.be.true;
 			done();
 		}).catch(done);
 	});
 
-	it('Store.prototype.update() should call Model.prototype.set()', function(done) {
-		var store = new Store();
+	it('Store.prototype.update() should call Store.prototype._set()', function(done) {
 		var fakeObj = { pk: '1234'};
-		var updateSpy = sandbox.spy();
+		var updateSpy = sandbox.stub(store, '_set').returns(Promise.resolve());
 
-		store.define('myModel', {});
-		store.models.myModel.set = updateSpy;
+		var model = store.define('myModel', { pk: 'String' });
 		store.update('myModel', fakeObj).then(function() {
 			updateSpy.called.should.be.true;
-			updateSpy.calledWith(fakeObj, 'update', store).should.be.true;
+			updateSpy.calledWith(model, fakeObj, 'update').should.be.true;
 			done();
 		}).catch(done);
 	});
 
 	it('Store.prototype.delete() should call Model.prototype.delete()', function(done) {
-		var store = new Store();
 		var pk= '1234';
-		var deleteSpy = sandbox.spy();
+		var deleteSpy = sandbox.stub(store, '_delete').returns(Promise.resolve());
 
-		store.define('myModel', {});
-		store.models.myModel.delete = deleteSpy;
+		var model = store.define('myModel', {});
 		store.delete('myModel', pk).then(function() {
 			deleteSpy.called.should.be.true;
-			deleteSpy.calledWith(pk, store).should.be.true;
+			deleteSpy.calledWith(model, pk).should.be.true;
 			done();
 		}).catch(done);
 	});

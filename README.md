@@ -39,7 +39,8 @@ var store = new Store();
 
 var userSchema = {
     id: {
-        'String'
+        type: 'String',
+        primaryKey: true
     },
     firstName: 'String',
     age: {
@@ -54,23 +55,23 @@ store.define('users', userSchema);
 **3. Implement the required store methods**
 
 ```javascript
-store._get = function(pk) {
+store._get = function(model, pk) {
     // Use pk to fetch single entry from your db of choice
     // Returns a Promise
     // Resolve the promise with the entry as the value if found
     // Resolve the promise with empty value if not found or reject with a NotFoundError 
 };
 
-store._filter = function(query) {
+store._filter = function(model, query) {
     // Use query to fetch multiple entries matching the query from your db of choice
     // Returns a Promise
     // Resolve the promise with an array of entries or an empty array if none is mathcing
 };
 
-store._set = function(obj) {
+store._set = function(model, obj) {
     // Use obj to create or update the entry in the db of choice
     // Returns a Promise
-    // Resolve the promise with an empty value
+    // Resolve the promise with the set obj
 };
 ```
 
@@ -129,6 +130,20 @@ store.get('users', {
 ```
 
 ## Schemas
+
+**Define a primary key**
+
+Any field can be designated as the primary key. Only one field can be designated as the primary key.
+
+```javascript
+// Defines the 'id' field as the primary key
+var schema = {
+    id: {
+        type: 'String',
+        primaryKey: true
+    }
+};
+```
 
 **Nested schemas a.k.a object types**
 

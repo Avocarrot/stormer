@@ -20,6 +20,31 @@ describe('Schema Tests', function() {
 			}).should.throw('Type InvalidType is not supported');
 		});
 
+		it('throw an error if more than two fields are designated as primary keys', function() {
+			(function () {
+			  	new Schema({
+					firstPrimaryKey: {
+						type: 'String',
+						primaryKey: true
+					},
+					secondPrimaryKey: {
+						type: 'String',
+						primaryKey: true
+					}
+				});
+			}).should.throw('Only one field can be designated as the primary key');
+		});
+
+		it('parse and set the primary key', function() {
+		  	var schema = new Schema({
+				pk: {
+					type: 'String',
+					primaryKey: true
+				}
+			});
+			schema.should.have.property('primaryKey', 'pk')
+		});
+
 		it('parse schemas with simple and complex types', function() {
 			var schemaDef = {
 				simpleProperty: 'String',
@@ -245,6 +270,22 @@ describe('Schema Tests', function() {
 				done();
 			});
 		});
+
+		it('return an error if the primary key (always required) property is missing', function(done) {
+			var schemaDef = {
+				id: {
+					type: 'String',
+					primaryKey: true
+				}
+			};
+
+			var schema = new Schema(schemaDef);	
+			schema.create({}).catch(function(err) {
+				err.message.should.equal('Property .id is required');
+				done();
+			});
+		});
+
 
 		describe('work with Array properties and', function() {
 
