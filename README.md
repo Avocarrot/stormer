@@ -131,7 +131,7 @@ store.get('users', {
 
 ## Schemas
 
-**Define a primary key**
+### Define a primary key
 
 Any field can be designated as the primary key. Only one field can be designated as the primary key.
 
@@ -145,7 +145,7 @@ var schema = {
 };
 ```
 
-**Nested schemas a.k.a object types**
+### Nested schemas a.k.a object types
 
 ```javascript
 // Defines an 'address'' property with nested schema
@@ -160,7 +160,7 @@ var schema = {
 };
 ```
 
-**Define schemas with Array types**
+### Define schemas with Array types
 
 ```javascript
 // Defines a 'friends' property with Array type
@@ -173,11 +173,29 @@ var schema = {
 };
 ```
 
+### Custom property validations
+
+You can define a ```validate(value)``` function on each property. The ```value``` argument passed can be used to check the validity of the value and return either a truthy or falsy value. If a falsy value is returned then a ```CustomValidationError``` is thrown.
+
+```javascript
+// Defines a 'age' property with custom validation
+var schema = {
+    age: {
+        type: 'Number',
+        validate: function(value) {
+            return value > 0;
+        }
+    }
+};
+```
+
 ## Errors
 
 You can import the errors using ``` require('stormer').errors.<errorName> ```
 
-- ```ValidationError```: This error indicates that an operation failed because object didn't conform with the model's schema
+- ```TypeValidationError```: This error indicates that an operation failed because a schema property didn't conform with the designated type
+
+- ```CustomValidationError```: This error indicates that an operation failed because a schema property failed a custom validation
 
 - ```NotFoundError```: This error indicates that the object was not found in the store
 
