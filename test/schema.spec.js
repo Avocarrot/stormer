@@ -1,5 +1,7 @@
 var chai = require('chai');
 var Schema = require('../lib/schema');
+var TypeValidationError = require('../lib/errors').TypeValidationError;
+var CustomValidationError = require('../lib/errors').CustomValidationError;
 chai.should();
 
 describe('Schema Tests', function() {
@@ -18,6 +20,17 @@ describe('Schema Tests', function() {
 			  	invalidField: 'InvalidType'
 			  });
 			}).should.throw('Type InvalidType is not supported');
+		});
+
+		it('throw an error if property has invalid validator', function() {
+			(function () {
+			  new Schema({
+			  	propertyWithInvalidValidator: {
+			  		type: 'Number',
+			  		validate: 'this should be a function'
+			  	}
+			  });
+			}).should.throw('Validator for property .propertyWithInvalidValidator should be function');
 		});
 
 		it('throw an error if more than two fields are designated as primary keys', function() {
@@ -286,6 +299,56 @@ describe('Schema Tests', function() {
 			});
 		});
 
+		describe('work with Number properties and', function() {
+
+			before(function() {
+				var schemaDef = {
+					simpleNumField: 'Number',
+					requiredNumField: {
+						type: 'Number',
+						required: true,
+						validate: function(value) {
+							return value <= 5;	
+						}
+					},
+					numFieldWithDefault: {
+						type: 'Number',
+						default: 1.01
+					}
+				};
+				this.schema = new Schema(schemaDef);
+			});
+
+			it('return an error if an number property has the wrong type', function(done) {
+				this.schema.create({
+					requiredNumField: 'this should be a number'
+				}).catch(function(err) {
+					err.should.be.an.instanceOf(TypeValidationError);
+					err.message.should.equal('Property .requiredNumField should be of type Number');
+					done();
+				});
+			});
+
+			it('set the defaults for properties of type number', function(done) {
+				this.schema.create({
+					requiredNumField: 5 
+				}).then(function(instance) {
+					instance.should.have.deep.property('numFieldWithDefault', 1.01);
+					done();
+				}).catch(done);
+			});
+
+			it('return validation error if number field failed to pass the custom validation', function(done) {
+				this.schema.create({
+					requiredNumField: 6
+				}).catch(function(err) {
+					err.should.be.an.instanceOf(CustomValidationError);
+					err.message.should.equal('Property .requiredNumField failed custom validation');
+					done();
+				});
+			});
+
+		});
 
 		describe('work with Array properties and', function() {
 
@@ -306,7 +369,10 @@ describe('Schema Tests', function() {
 							fieldA: 'String',
 							fieldB: {
 								type: 'Number',
-								default: 100
+								default: 100,
+								validate: function(value) {
+									return value < 1000
+								}
 							}
 						}
 					}
@@ -318,6 +384,7 @@ describe('Schema Tests', function() {
 				this.schema.create({
 					ofStrings: 'this should be an array'
 				}).catch(function(err) {
+					err.should.be.an.instanceOf(TypeValidationError);
 					err.message.should.equal('Property .ofStrings should be of type Array');
 					done();
 				});
@@ -327,6 +394,7 @@ describe('Schema Tests', function() {
 				this.schema.create({
 					ofStrings: ['1', 2, '3'] // The array should have items of type String
 				}).catch(function(err) {
+					err.should.be.an.instanceOf(TypeValidationError);
 					err.message.should.equal('Property .ofStrings[1].subSchema should be of type String');
 					done();
 				});
@@ -336,7 +404,18 @@ describe('Schema Tests', function() {
 				this.schema.create({
 					ofObjects: [{fieldA: 1234}, {fieldA: '1234'}] // The array should have items of type Object
 				}).catch(function(err) {
+					err.should.be.an.instanceOf(TypeValidationError);
 					err.message.should.equal('Property .ofObjects[0].fieldA should be of type String');
+					done();
+				});
+			});
+
+			it('return an error if an array of objects has items that failed custom validation', function(done) {
+				this.schema.create({
+					ofObjects: [{fieldB: 1234}] // The value of fieldB should be lower than 1000
+				}).catch(function(err) {
+					err.should.be.an.instanceOf(CustomValidationError);
+					err.message.should.equal('Property .ofObjects[0].fieldB failed custom validation');
 					done();
 				});
 			});
