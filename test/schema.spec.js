@@ -351,6 +351,18 @@ describe('Schema Tests', function() {
 				});
 			});
 
+			it('create objects with properties of type boolean', function(done) {
+				var schema = new Schema({
+					boolField: 'Boolean'
+				});
+				schema.create({
+					boolField: false 
+				}).then(function(instance) {
+					instance.should.have.deep.property('boolField', false);
+					done();
+				});
+			});
+
 			it('set the defaults for properties of type array', function(done) {
 				this.schema.create({
 					ofObjects: [{fieldA: '1234'}] 
