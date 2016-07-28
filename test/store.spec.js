@@ -131,12 +131,11 @@ describe('Store Tests', function() {
 			cache = new MyCache();
 		});
 
-		it('have cacheEnabled true', function(done) {
+		it('have cache objext', function(done) {
 			var store = new Store();
-			store.cacheEnabled.should.equal(false);
+			store.cache.should.equal(false);
 
 			var store = new Store(cache);
-			store.cacheEnabled.should.equal(true);
 			store.cache.should.equal(cache);
 			done();
 		});
@@ -172,7 +171,7 @@ describe('Store Tests', function() {
 
 			store.create('myModel', obj).then(function(actual) {
 				store.get('myModel', obj.pk).then(function(expected) {
-					(getStub.called === false).should.equal(true);
+					getStub.called.should.equal(false);
 					expected.should.equal(actual);
 					done();
 				}).catch(done);
@@ -191,7 +190,7 @@ describe('Store Tests', function() {
 
 			store.update('myModel', obj).then(function(actual) {
 				store.get('myModel', obj.pk).then(function(expected) {
-					(getStub.called === false).should.equal(true);
+					getStub.called.should.equal(false);
 					expected.should.equal(actual);
 					done();
 				}).catch(done);

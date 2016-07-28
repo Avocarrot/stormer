@@ -138,7 +138,7 @@ var cache = new MyCache({ ttl: 12450, other: 'options' });
 var store = new Store(cache);
 ```
 
-Store use the Cache upon create/update & get of objects. **Attention**: Store.delete does not clean item from cache. You need to relly on ttl for this.
+Store use the Cache upon create/update & get of objects. **Attention**: Store.delete does not clean item from cache. You need to rely on ttl for this.
 
 ## Schemas
 

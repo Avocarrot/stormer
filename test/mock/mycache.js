@@ -16,12 +16,8 @@ MyCache.prototype.set = function(key, obj) {
 	return this._internal.set(key, obj);
 };
 
-MyCache.prototype.has = function(key) {
-	return this._internal.has(key);
-};
-
 MyCache.prototype.delete = function(key) {
-	return this._internal.delete(key);;
+	return this._internal.delete(key);
 };
 
 module.exports = MyCache;
