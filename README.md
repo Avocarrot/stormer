@@ -129,6 +129,17 @@ store.get('users', {
 });
 ```
 
+### Internal Caching
+
+Store supports internal caching. In order to get this functionality up and running you need to implement the Cache interface found in `lib/cache.js` and pass an instance of your implementation upon Store instastiation. Example:
+
+```javascript
+var cache = new MyCache({ ttl: 12450, other: 'options' });
+var store = new Store(cache);
+```
+
+Store use the Cache upon create/update & get of objects. **Attention**: Store.delete does not clean item from cache. You need to relly on ttl for this.
+
 ## Schemas
 
 ### Define a primary key
