@@ -58,7 +58,7 @@ Supported types:
 - `Object`
 - `Array`
 - `Boolean`
-- `Date` *(v0.11 and later)*
+- `Date` *(v0.9.0 and later)*
 
 **3. Implement the required store methods**
 
