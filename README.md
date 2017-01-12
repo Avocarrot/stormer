@@ -52,6 +52,14 @@ var userSchema = {
 store.define('users', userSchema);
 ```
 
+Supported types:
+- `String`
+- `Number`
+- `Object`
+- `Array`
+- `Boolean`
+- `Date` *(v0.11 and later)*
+
 **3. Implement the required store methods**
 
 ```javascript
