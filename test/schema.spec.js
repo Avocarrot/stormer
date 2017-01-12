@@ -181,6 +181,25 @@ describe('Schema Tests', function() {
 
 		});
 
+		it('parse schemas with date types', function() {
+
+			var schemaDef = {
+				simpleDate: 'Date',
+				complexDate: {
+					type: 'Date',
+                                  default: new Date('Thu Jan 12 2017 15:24:20 GMT+0200 (EET)') 
+				}
+			};
+
+			var schema = new Schema(schemaDef);
+
+			schema.should.have.deep.property('schema.simpleDate.type', 'Date');
+			schema.should.have.deep.property('schema.simpleDate.path', '.simpleDate');
+
+			schema.should.have.deep.property('schema.complexDate.type', 'Date');
+			schema.should.have.deep.property('schema.complexDate.path', '.complexDate');
+		});
+
 	});
 
 	describe('Schema.prototype.create() should', function() {
