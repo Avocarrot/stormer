@@ -494,5 +494,31 @@ describe('Schema Tests', function() {
 		});
 
 	});
+
+	describe('Schema.prototype.getPkOfInstance should', function() {
+
+		it('return null if not primary key is set for schema', function(done) {
+			var schema = new Schema({ pk: 'String' });
+			(schema.getPkOfInstance({}) === null).should.equal(true);
+			(schema.getPkOfInstance({ pk: '12345' }) === null).should.equal(true);
+			done();
+		});
+
+		it('return null instance has no primary key', function(done) {
+			var schema = new Schema({ pk: { type: 'String', primaryKey: true } });
+			(schema.getPkOfInstance({}) ===  null).should.equal(true);
+			(schema.getPkOfInstance({ foo: '12345' }) === null).should.equal(true);
+			done();
+		});
+
+		it('return primary key of instance', function(done) {
+			var schema = new Schema({ pk: { type: 'String', primaryKey: true } });
+			schema.getPkOfInstance({ pk: '12345' }).should.equal('12345');
+			(schema.getPkOfInstance({ pk: null }) === null).should.equal(true);
+			(schema.getPkOfInstance({ pk: undefined }) === null).should.equal(true);
+			done();
+		});
+
+	});
 	
 });
