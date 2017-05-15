@@ -31,6 +31,17 @@ describe('Store Tests', function() {
 		});
 
 	});
+        
+        describe('Store.prototype.alias() should', function() {
+		it('set an alias for a model', function(done) {
+			store.define('myModel', {});
+			store.models.should.have.property('myModel');
+
+                        store.alias('aliasModel', 'myModel');
+                        store.getModel('aliasModel').should.equal(store.getModel('myModel'));
+                        done();
+		});
+        });
 
 	it('Store.prototype.get() should call Store.prototype._get()', function(done) {
 		var pk = '1234';
