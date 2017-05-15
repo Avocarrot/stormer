@@ -60,6 +60,24 @@ Supported types:
 - `Boolean`
 - `Date` *(v0.9.0 and later)*
 
+**2.1. Set an alias for a model name**
+
+```javascript
+const assert = require('assert');
+const store = new Store();
+let model = {
+  id: {
+    type: 'String',
+    primaryKey: true
+  }
+};
+
+store.define('production.users', model);
+store.alias('users', 'production.users');
+
+assert(store.getModel('users') === store.getModel('production.users'));
+```
+
 **3. Implement the required store methods**
 
 ```javascript
