@@ -10,7 +10,7 @@ describe('Store Tests', function() {
 	var store;
 
 	beforeEach(function() {
-		store = new Store();		
+		store = new Store();
 	});
 
 	afterEach(function() {
@@ -31,17 +31,16 @@ describe('Store Tests', function() {
 		});
 
 	});
-        
-        describe('Store.prototype.alias() should', function() {
+
+  describe('Store.prototype.alias() should', function() {
 		it('set an alias for a model', function(done) {
 			store.define('myModel', {});
 			store.models.should.have.property('myModel');
-
-                        store.alias('aliasModel', 'myModel');
-                        store.getModel('aliasModel').should.equal(store.getModel('myModel'));
-                        done();
+      store.alias('aliasModel', 'myModel');
+      store.getModel('aliasModel').should.equal(store.getModel('myModel'));
+      done();
 		});
-        });
+  });
 
 	it('Store.prototype.get() should call Store.prototype._get()', function(done) {
 		var pk = '1234';
@@ -81,6 +80,17 @@ describe('Store Tests', function() {
 		}).catch(done);
 	});
 
+	it('Store.prototype.create() should honor schema defaults', function(done) {
+		var fakeObj = { pk: '1234' };
+		var createStub = sandbox.stub(store, '_set').returns(Promise.resolve());
+
+		var model = store.define('myModel', { pk: 'String', foo: { type: 'String', default: 'bar' } });
+		store.create('myModel', fakeObj).then(function() {
+			createStub.calledWith(model, { pk: '1234', foo: 'bar' }, 'create').should.be.true;
+			done();
+		}).catch(done);
+	});
+
 	it('Store.prototype.update() should call Store.prototype._set()', function(done) {
 		var fakeObj = { pk: '1234'};
 		var updateSpy = sandbox.stub(store, '_set').returns(Promise.resolve());
@@ -89,6 +99,17 @@ describe('Store Tests', function() {
 		store.update('myModel', fakeObj).then(function() {
 			updateSpy.called.should.be.true;
 			updateSpy.calledWith(model, fakeObj, 'update').should.be.true;
+			done();
+		}).catch(done);
+	});
+
+	it('Store.prototype.update() should ignore schema defaults', function(done) {
+		var fakeObj = { pk: '1234' };
+		var createStub = sandbox.stub(store, '_set').returns(Promise.resolve());
+
+		var model = store.define('myModel', { pk: 'String', foo: { type: 'String', default: 'bar' } });
+		store.update('myModel', fakeObj).then(function() {
+			createStub.calledWith(model, { pk: '1234' }, 'update').should.be.true;
 			done();
 		}).catch(done);
 	});
@@ -104,5 +125,5 @@ describe('Store Tests', function() {
 			done();
 		}).catch(done);
 	});
-	
+
 });
