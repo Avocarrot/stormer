@@ -187,7 +187,7 @@ describe('Schema Tests', function() {
 				simpleDate: 'Date',
 				complexDate: {
 					type: 'Date',
-                                  default: new Date('Thu Jan 12 2017 15:24:20 GMT+0200 (EET)') 
+          default: new Date('Thu Jan 12 2017 15:24:20 GMT+0200 (EET)')
 				}
 			};
 
@@ -224,7 +224,7 @@ describe('Schema Tests', function() {
 				}
 			};
 
-			this.schema = new Schema(schemaDef);			
+			this.schema = new Schema(schemaDef);
 		});
 
 		it('return an error if a boolean property has the wrong type', function(done) {
@@ -232,7 +232,7 @@ describe('Schema Tests', function() {
 				bool: 'Boolean'
 			};
 
-			var schema = new Schema(schemaDef);	
+			var schema = new Schema(schemaDef);
 			schema.create({
 				bool: 'this should be a boolean'
 			}).catch(function(err) {
@@ -296,7 +296,7 @@ describe('Schema Tests', function() {
 				}
 			};
 
-			var schema = new Schema(schemaDef);	
+			var schema = new Schema(schemaDef);
 			schema.create({}).catch(function(err) {
 				err.message.should.equal('Property .requiredProperty is required');
 				done();
@@ -311,7 +311,7 @@ describe('Schema Tests', function() {
 				}
 			};
 
-			var schema = new Schema(schemaDef);	
+			var schema = new Schema(schemaDef);
 			schema.create({}).catch(function(err) {
 				err.message.should.equal('Property .id is required');
 				done();
@@ -327,7 +327,7 @@ describe('Schema Tests', function() {
 						type: 'Number',
 						required: true,
 						validate: function(value) {
-							return value <= 5;	
+							return value <= 5;
 						}
 					},
 					numFieldWithDefault: {
@@ -346,15 +346,6 @@ describe('Schema Tests', function() {
 					err.message.should.equal('Property .requiredNumField should be of type Number');
 					done();
 				});
-			});
-
-			it('set the defaults for properties of type number', function(done) {
-				this.schema.create({
-					requiredNumField: 5 
-				}).then(function(instance) {
-					instance.should.have.deep.property('numFieldWithDefault', 1.01);
-					done();
-				}).catch(done);
 			});
 
 			it('return validation error if number field failed to pass the custom validation', function(done) {
@@ -441,7 +432,7 @@ describe('Schema Tests', function() {
 
 			it('create objects with properties of type array', function(done) {
 				this.schema.create({
-					ofObjects: [{fieldA: '1234'}, {fieldA: '1234'}] 
+					ofObjects: [{fieldA: '1234'}, {fieldA: '1234'}]
 				}).then(function(instance) {
 					instance.should.have.deep.property('ofObjects[0].fieldA', '1234');
 					instance.should.have.deep.property('ofObjects[1].fieldA', '1234');
@@ -454,45 +445,35 @@ describe('Schema Tests', function() {
 					boolField: 'Boolean'
 				});
 				schema.create({
-					boolField: false 
+					boolField: false
 				}).then(function(instance) {
 					instance.should.have.deep.property('boolField', false);
 					done();
 				});
 			});
 
-			it('set the defaults for properties of type array', function(done) {
-				this.schema.create({
-					ofObjects: [{fieldA: '1234'}] 
-				}).then(function(instance) {
-					instance.should.have.deep.property('ofObjects[0].fieldA', '1234');
-					instance.should.have.deep.property('ofObjects[0].fieldB', 100);
-					done();
-				}).catch(done);
-			});
-
-		});
-
-		it('set the default values', function(done) {
-			this.schema.create({}).then(function(objWithDefaults) {
-				objWithDefaults.should.not.have.property('simpleField');
-				objWithDefaults.should.not.have.property('complexField');
-				objWithDefaults.should.not.have.property('arrayOfStringsField');
-				objWithDefaults.should.not.have.deep.property('nestedObject.nestedFieldWithDefault'); // Do not set nested default if the parent is not set
-				objWithDefaults.should.have.property('fieldWithDefault', 'this is the default value');
-				done();
-			});
-		});
-
-		it('not set a default value if one is already set by the user', function(done) {
-			this.schema.create({
-				fieldWithDefault: 'do not override me'
-			}).then(function(objWithDefaults) {
-				objWithDefaults.should.have.property('fieldWithDefault', 'do not override me');
-				done();
-			});
 		});
 
 	});
-	
+
+	describe('Schema.prototype.setDefaults() should', function() {
+
+		it('use the default when object value is not provided', function(done) {
+			var schema = new Schema({ foo: { type: 'String', default: 'bar' } });
+			var actual = schema.setDefaults({});
+			var expected = { foo: 'bar' };
+			actual.should.eql(expected);
+			done();
+		});
+
+		it('ignore the default if a value is provided', function(done) {
+			var schema = new Schema({ foo: { type: 'String', default: 'bar' } });
+			var actual = schema.setDefaults({ foo: 'baz' });
+			var expected = { foo: 'baz' };
+			actual.should.eql(expected);
+			done();
+		});
+
+	});
+
 });
